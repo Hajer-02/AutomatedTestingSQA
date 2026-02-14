@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AddToCartTest extends BaseTest {
 
+    private final String VALID_USER = "standard_user";
+    private final String VALID_PASS = "secret_sauce";
+
     @Test
     public void testAddProductToCart() {
         System.out.println("Opening SauceDemo website...");
@@ -20,8 +23,8 @@ public class AddToCartTest extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         System.out.println("Logging in...");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-name"))).sendKeys("standard_user");
-        driver.findElement(By.id("password")).sendKeys("secret_sauce");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-name"))).sendKeys(VALID_USER);
+        driver.findElement(By.id("password")).sendKeys(VALID_PASS);
         driver.findElement(By.id("login-button")).click();
 
         System.out.println("Adding product to cart...");
