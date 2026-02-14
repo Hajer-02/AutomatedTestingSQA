@@ -1,56 +1,64 @@
 package tests;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 
-public class CheckoutTest extends BaseTest {
+public class CheckoutTest {
 
     @Test
     public void testCheckoutProcess() {
-        driver.get("https://www.saucedemo.com/");
-
-        // Log in
-        driver.findElement(By.id("user-name")).sendKeys("standard_user");
-        driver.findElement(By.id("password")).sendKeys("secret_sauce");
-        driver.findElement(By.id("login-button")).click();
-
-        // Add a product to cart
-        driver.findElement(By.id("add-to-cart-sauce-labs-backpack")).click();
-
-        // Open the cart
-        driver.findElement(By.className("shopping_cart_link")).click();
-
-        // Start checkout
-        driver.findElement(By.id("checkout")).click();
-
-        // Explicit wait for checkout page elements
+        // Setup driver
+        WebDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
-        // Wait for First Name field and fill it
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("first-name")));
-        driver.findElement(By.id("first-name")).sendKeys("John");
+        try {
+            // 1️⃣ Open SauceDemo and log in
+            driver.get("https://www.saucedemo.com/");
+            driver.findElement(By.id("user-name")).sendKeys("standard_user");
+            driver.findElement(By.id("password")).sendKeys("secret_sauce");
+            driver.findElement(By.id("login-button")).click();
 
-        // Wait for Last Name field and fill it
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("last-name")));
-        driver.findElement(By.id("last-name")).sendKeys("Doe");
+            // 2️⃣ Add product to cart
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("add-to-cart-sauce-labs-backpack"))).click();
 
-        // Wait for Postal Code field and fill it
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("postal-code")));
-        driver.findElement(By.id("postal-code")).sendKeys("12345");
+            // 3️⃣ Open cart
+            driver.findElement(By.className("shopping_cart_link")).click();
 
-        // Continue checkout
-        driver.findElement(By.id("continue")).click();
+            // 4️⃣ Click checkout
+            driver.findElement(By.id("checkout")).click();
 
-        // Wait for Finish button and click
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("finish")));
-        driver.findElement(By.id("finish")).click();
+            // 5️⃣ Fill checkout info
+            driver.findElement(By.id("first-name")).sendKeys("Hajer");
+            driver.findElement(By.id("last-name")).sendKeys("Test");
+            driver.findElement(By.id("postal-code")).sendKeys("12345");
+            driver.findElement(By.id("continue")).click();
 
-        // Verify order completion
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("complete-header")));
-        String completionText = driver.findElement(By.className("complete-header")).getText();
-        System.out.println("Checkout completed: " + completionText);
+            // 6️⃣ Finish checkout
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("finish"))).click();
+
+            // 7️⃣ Wait for confirmation message
+            WebElement confirmationHeader = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.className("complete-header"))
+            );
+
+            // 8️⃣ Assert the checkout is completed
+            Assertions.assertTrue(
+            	    confirmationHeader.getText().equalsIgnoreCase("Thank you for your order!"),
+            	    "Checkout not completed!"
+            	);
+
+
+        } finally {
+            // 9️⃣ Close the browser
+            driver.quit();
+        }
     }
 }
