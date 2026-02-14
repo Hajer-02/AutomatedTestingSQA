@@ -16,17 +16,16 @@ public class BaseTest {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
 
+        // Detect CI environment
         String ci = System.getenv("CI");
 
         if ("true".equalsIgnoreCase(ci)) {
-            // CI environment: headless Chrome
             options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
         } else {
-            // Local environment: normal Chrome
             options.addArguments("--start-maximized");
         }
 
