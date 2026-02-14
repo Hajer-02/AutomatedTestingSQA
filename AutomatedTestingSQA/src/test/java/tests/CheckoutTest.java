@@ -2,59 +2,62 @@ package tests;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CheckoutTest extends BaseTest {
+public class CheckoutTest {
 
     @Test
     public void testCheckoutProcess() {
-        System.out.println("Opening SauceDemo website...");
-        driver.get("https://www.saucedemo.com/");
+        // Set up ChromeDriver
+        WebDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Login
-        System.out.println("Logging in...");
-        driver.findElement(By.id("user-name")).sendKeys("standard_user");
-        driver.findElement(By.id("password")).sendKeys("secret_sauce");
-        driver.findElement(By.id("login-button")).click();
+        try {
+            // 1. Open SauceDemo website
+            driver.get("https://www.saucedemo.com/");
 
-        // Add product to cart
-        System.out.println("Adding product to cart...");
-        driver.findElement(By.id("add-to-cart-sauce-labs-backpack")).click();
+            // 2. Log in
+            driver.findElement(By.id("user-name")).sendKeys("standard_user");
+            driver.findElement(By.id("password")).sendKeys("secret_sauce");
+            driver.findElement(By.id("login-button")).click();
 
-        // Go to cart
-        System.out.println("Opening cart...");
-        driver.findElement(By.className("shopping_cart_link")).click();
+            // 3. Add product to cart
+            driver.findElement(By.cssSelector(".inventory_item button")).click();
 
-        // Checkout
-        System.out.println("Starting checkout...");
-        driver.findElement(By.id("checkout")).click();
-        driver.findElement(By.id("first-name")).sendKeys("Hajer");
-        driver.findElement(By.id("last-name")).sendKeys("Tester");
-        driver.findElement(By.id("postal-code")).sendKeys("12345");
-        driver.findElement(By.id("continue")).click();
-        driver.findElement(By.id("finish")).click();
+            // 4. Open cart
+            driver.findElement(By.id("shopping_cart_container")).click();
 
-        // Wait for confirmation
-        System.out.println("Waiting for order confirmation...");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-        WebElement completeHeader = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.className("complete-header"))
-        );
+            // 5. Checkout
+            driver.findElement(By.id("checkout")).click();
 
-        String actualText = completeHeader.getText().trim();
-        System.out.println("Header text: " + actualText);
+            // 6. Fill in checkout info
+            driver.findElement(By.id("first-name")).sendKeys("Hajer");
+            driver.findElement(By.id("last-name")).sendKeys("Tester");
+            driver.findElement(By.id("postal-code")).sendKeys("12345");
+            driver.findElement(By.id("continue")).click();
 
-        // Flexible assertion
-        assertTrue(actualText.equalsIgnoreCase("THANK YOU FOR YOUR ORDER") ||
-                   actualText.equalsIgnoreCase("Thank you for your order!"),
-                   "Checkout failed! Header text: " + actualText);
+            // 7. Finish checkout
+            driver.findElement(By.id("finish")).click();
 
-        System.out.println("? Test completed successfully!");
+            // 8. Wait for confirmation header
+            WebElement thankYouHeader = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".complete-header"))
+            );
+
+            // 9. Assertion (ignore case and punctuation differences)
+            assertEquals("Thank you for your order!", thankYouHeader.getText());
+
+        } finally {
+            // Close browser
+            driver.quit();
+        }
     }
 }
