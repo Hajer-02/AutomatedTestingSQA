@@ -1,12 +1,15 @@
 name: Run Selenium Tests with Maven
+
 on:
   push:
   pull_request:
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      # 1️⃣ Checkout the code
+      # 1️⃣ Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -16,6 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 16
+          cache: maven
 
       # 3️⃣ Install Chrome for Selenium
       - name: Setup Chrome
@@ -25,3 +29,27 @@ jobs:
       - name: Install dependencies and run tests
         run: mvn -B clean test
         working-directory: ./AutomatedTestingSQA
+
+      # 5️⃣ Upload Surefire test reports
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: ./AutomatedTestingSQA/target/surefire-reports/
+
+      # 6️⃣ Upload JaCoCo code coverage reports
+      - name: Upload code coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-coverage-report
+          path: ./AutomatedTestingSQA/target/site/jacoco/
+
+      # 7️⃣ Optional: SonarCloud code quality scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./AutomatedTestingSQA
+          organization: YOUR_SONARCLOUD_ORG   # replace with your org key
+          token: ${{ secrets.SONAR_TOKEN }}
