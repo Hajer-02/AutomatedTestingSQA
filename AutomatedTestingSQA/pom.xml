@@ -18,7 +18,7 @@
     </properties>
 
     <dependencies>
-        <!-- Selenium WebDriver (exclude slf4j-simple to avoid duplicates) -->
+        <!-- Selenium WebDriver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -52,7 +52,7 @@
             <version>5.4.0</version>
         </dependency>
 
-        <!-- Optional: Explicit SLF4J binding -->
+        <!-- SLF4J for logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -62,6 +62,7 @@
 
     <build>
         <plugins>
+            <!-- Run JUnit Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -73,6 +74,37 @@
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
+
+            <!-- ✅ Generate Test Coverage Report -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- (Optional) Code Quality - SonarQube -->
+            <!-- Uncomment if using SonarQube / SonarCloud -->
+            <!--
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
+            </plugin>
+            -->
         </plugins>
     </build>
 
