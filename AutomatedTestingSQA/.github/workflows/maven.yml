@@ -30,23 +30,31 @@ jobs:
         run: mvn -B clean verify
         working-directory: ./AutomatedTestingSQA
 
-      # 5️⃣ Upload Surefire test reports
-      - name: Upload test reports
+      # 5️⃣ Upload Selenium screenshots (if any)
+      - name: Upload Selenium screenshots
+        if: always()  # ensures it runs even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-screenshots
+          path: ./AutomatedTestingSQA/screenshots/**/*.png
+
+      # 6️⃣ Upload Surefire test reports
+      - name: Upload Surefire test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: surefire-reports
           path: ./AutomatedTestingSQA/target/surefire-reports/
 
-      # 6️⃣ Upload JaCoCo coverage reports
-      - name: Upload code coverage report
+      # 7️⃣ Upload JaCoCo coverage reports
+      - name: Upload JaCoCo coverage reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-coverage-report
           path: ./AutomatedTestingSQA/target/site/jacoco/
 
-      # 7️⃣ Optional: SonarCloud scan
+      # 8️⃣ SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
