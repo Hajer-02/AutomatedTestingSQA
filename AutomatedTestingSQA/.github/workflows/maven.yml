@@ -25,12 +25,12 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # 4️⃣ Run Maven tests and generate coverage
-      - name: Install dependencies and run tests
-        run: mvn -B clean verify
+      # 4️⃣ Run Maven tests and build jar
+      - name: Run Maven tests and package
+        run: mvn -B clean verify package
         working-directory: ./AutomatedTestingSQA
 
-      # 5️⃣ Debug: check report folders
+      # 5️⃣ Debug: list generated folders
       - name: List report folders
         run: |
           echo "Screenshots:"
@@ -39,6 +39,8 @@ jobs:
           ls -R ./AutomatedTestingSQA/target/surefire-reports || echo "No surefire reports"
           echo "JaCoCo reports:"
           ls -R ./AutomatedTestingSQA/target/site/jacoco || echo "No jacoco reports"
+          echo "Built jar files:"
+          ls -R ./AutomatedTestingSQA/target/*.jar || echo "No jar files"
 
       # 6️⃣ Upload Selenium screenshots (if any)
       - name: Upload Selenium screenshots
@@ -46,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: selenium-screenshots
-          path: ./AutomatedTestingSQA/screenshots/**/*.png
+          path: ./AutomatedTestingSQA/screenshots
 
       # 7️⃣ Upload Surefire test reports
       - name: Upload Surefire test reports
@@ -54,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: surefire-reports
-          path: ./AutomatedTestingSQA/target/surefire-reports/
+          path: ./AutomatedTestingSQA/target/surefire-reports
 
       # 8️⃣ Upload JaCoCo coverage reports
       - name: Upload JaCoCo coverage reports
@@ -62,12 +64,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-coverage-report
-          path: ./AutomatedTestingSQA/target/site/jacoco/
+          path: ./AutomatedTestingSQA/target/site/jacoco
 
-      # 9️⃣ SonarCloud Scan
+      # 9️⃣ Upload built jar
+      - name: Upload Maven build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app-jar
+          path: ./AutomatedTestingSQA/target/*.jar
+
+      # 🔟 SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: ./AutomatedTestingSQA
-          organization: YOUR_SONARCLOUD_ORG   # replace with your SonarCloud organization key
+          organization: YOUR_SONARCLOUD_ORG
           token: ${{ secrets.SONAR_TOKEN }}
