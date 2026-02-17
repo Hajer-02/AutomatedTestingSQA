@@ -31,9 +31,9 @@ public class SortProductsTest extends BaseTest {
                 driver.findElement(By.className("product_sort_container"))
         ));
         Select sortDropdown = new Select(sortDropdownElement);
-        sortDropdown.selectByValue("hilo"); // high to low
+        sortDropdown.selectByValue("hilo"); 
 
-        // wait for first item to change
+  
         wait.until(driver -> !driver.findElement(By.className("inventory_item_name")).getText().equals(firstNameBefore));
 
         WebElement firstItemAfter = driver.findElement(By.className("inventory_item_name"));

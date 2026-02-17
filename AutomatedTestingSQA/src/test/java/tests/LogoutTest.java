@@ -20,15 +20,12 @@ public class LogoutTest extends BaseTest {
         driver.findElement(By.id("password")).sendKeys(VALID_PASS);
         driver.findElement(By.id("login-button")).click();
 
-        // Click on menu then logout
         driver.findElement(By.id("react-burger-menu-btn")).click();
         driver.findElement(By.id("logout_sidebar_link")).click();
 
-        // Wait for redirection
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.urlContains("saucedemo.com"));
 
-        // Verify user is redirected to login page
         assertTrue(driver.getCurrentUrl().contains("saucedemo.com"),
                 "User should be redirected to login page after logout");
     }

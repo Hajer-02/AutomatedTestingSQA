@@ -16,7 +16,6 @@ public class BaseTest {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
 
-        // Detect CI environment
         String ci = System.getenv("CI");
 
         if ("true".equalsIgnoreCase(ci)) {
